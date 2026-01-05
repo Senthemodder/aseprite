@@ -1,14 +1,18 @@
 @echo off
 
-rem If cl.exe is not available, we try to run the vcvars64.bat
-where cl.exe >nul 2>nul
-if %errorlevel%==1 (
-   @call "%ProgramFiles%\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat"
-)
+rem Setup VS environment
+call "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
 
-rem Add an extra path element which will be invalidated by Git Bash.
-rem In this way we avoid invalidating the PATH location where cl.exe is.
-set PATH=.;%PATH%
+rem Setup CMake and Ninja
+set "PATH=C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;%PATH%"
+set "PATH=C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;%PATH%"
 
-powershell -ExecutionPolicy Bypass -File .\build.ps1 %*
-pause
+rem Setup Git and Tools (curl)
+set "PATH=D:\Program Files\Git\bin;%PATH%"
+set "PATH=D:\Program Files\Git\mingw64\bin;%PATH%"
+
+rem Add an extra path element which will be invalidated by Git Bash (legacy fix from original script)
+set "PATH=.;%PATH%"
+
+rem Run build script directly with sh
+sh.exe build.sh --auto
